@@ -18,8 +18,8 @@ public class Main {
         }
 
         String url = "jdbc:postgresql://localhost:5432/dbproduct";
-        String username = "postgres";
-        String password = "12345678";
+        String username = System.getenv("user");
+        String password = System.getenv("pwd");
 
         try {
             Connection connection = DriverManager.getConnection(url,username,password);
