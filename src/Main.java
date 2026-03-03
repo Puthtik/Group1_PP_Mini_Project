@@ -1,15 +1,15 @@
-import java.util.Scanner;
+import view.View;
+
 import java.sql.*;
 
-interface Management {
-
-}
 
 public class Main {
     public static void main(String[] args){
 
+        String url = System.getenv("DB_URL");
+        String username = System.getenv("DB_USERNAME");
+        String password = System.getenv("DB_PASSWORD");
 
-        //Database Connection
         try {
             Class.forName("org.postgresql.Driver");
             System.out.println("File found!");
@@ -17,19 +17,16 @@ public class Main {
             System.out.println("Class not found!");
         }
 
-        String url = "jdbc:postgresql://localhost:5432/dbproduct";
-        String username = "postgres";
-        String password = "12345678";
+        try (Connection connection = DriverManager.getConnection(url,username,password)) {
 
-        try {
-            Connection connection = DriverManager.getConnection(url,username,password);
             System.out.println("Connected");
-            //Start from here
-            //1. Display Product List
+            new View(connection);
 
 
-        } catch (SQLException e){
+
+        }catch (SQLException e){
             System.out.println("Connection Failed");
+            e.printStackTrace();
         }
     }
 }
