@@ -82,4 +82,83 @@ public class View {
         return input.toUpperCase();
     }
 
+
+    public void start() {
+
+        String command;
+
+        do {
+            showTable();
+            showMenu();
+            command = inputOption();
+
+            switch (command) {
+
+                case "N":
+                    System.out.println("Next Page");
+                    break;
+
+                case "P":
+                    System.out.println("Previous Page");
+                    break;
+
+                case "F":
+                    System.out.println("First Page");
+                    break;
+
+                case "L":
+                    System.out.println("Last Page");
+                    break;
+
+                case "G":
+                    System.out.println("Go To Page");
+                    break;
+
+                case "W":
+                    System.out.println("Write");
+                    break;
+
+                case "R":
+                    System.out.println("Read");
+                    break;
+
+                case "U":
+                    System.out.println("Update");
+                    break;
+
+                case "D":
+                    System.out.println("Delete");
+                    break;
+
+                case "S":
+                    System.out.println("Search");
+                    break;
+
+                case "SR":
+                    System.out.println("Set Rows");
+                    break;
+
+                case "SA":
+                    System.out.println("Save");
+                    break;
+
+                case "UN":
+                    System.out.println("Unsaved");
+                    break;
+
+                case "BA":
+                    System.out.println("Backup");
+                    break;
+
+                case "RE":
+                    System.out.println("Restore");
+                    break;
+
+                case "E":
+                    System.out.println("Exit program");
+                    break;
+            }
+
+        } while (!command.equals("E"));
+    }
 }

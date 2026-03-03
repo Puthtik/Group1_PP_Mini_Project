@@ -20,7 +20,8 @@ public class Main {
         try (Connection connection = DriverManager.getConnection(url,username,password)) {
 
             System.out.println("Connected");
-            new View(connection);
+            View view = new View(connection);
+            view.start();
 
 
 
