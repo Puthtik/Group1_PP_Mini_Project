@@ -4,6 +4,9 @@ import java.sql.*;
 
 
 public class Main {
+
+
+
     public static void main(String[] args){
 
         String url = System.getenv("DB_URL");
@@ -22,6 +25,7 @@ public class Main {
             System.out.println("Connected");
             View view = new View(connection);
             view.start();
+
 
 
         }catch (SQLException e){
