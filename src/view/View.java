@@ -10,6 +10,8 @@ public class View {
     public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
     public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+
 
     Scanner scanner = new Scanner(System.in);
 
@@ -31,27 +33,33 @@ public class View {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            Table table = new Table(5, BorderStyle.UNICODE_BOX);
+            CellStyle headerStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+            CellStyle dataStyle = new CellStyle(CellStyle.HorizontalAlign.center);
 
-            table.setColumnWidth(0, 10, 15);
-            table.setColumnWidth(1, 30, 40);
+            Table table = new Table(5, BorderStyle.UNICODE_BOX_WIDE);
+
+            table.setColumnWidth(0, 15, 20);
+            table.setColumnWidth(1, 40, 50);
             table.setColumnWidth(2, 20, 25);
-            table.setColumnWidth(3, 10, 15);
-            table.setColumnWidth(4, 15, 20);
+            table.setColumnWidth(3, 15, 20);
+            table.setColumnWidth(4, 25, 30);
 
-            table.addCell("ID");
-            table.addCell("Name");
-            table.addCell("Unit Price");
-            table.addCell("Qty");
-            table.addCell("Import Date");
+            table.addCell(BLUE + "ID" + RESET, headerStyle);
+            table.addCell(BLUE + "Name" + RESET, headerStyle);
+            table.addCell(BLUE + "Unit Price" + RESET, headerStyle);
+            table.addCell(BLUE + "Qty" + RESET, headerStyle);
+            table.addCell(BLUE + "Import Date" + RESET, headerStyle);
 
             while (rs.next()) {
-                table.addCell(String.valueOf(rs.getInt("id")));
-                table.addCell(rs.getString("product_name"));
-                table.addCell(String.format("%.2f", rs.getDouble("unit_price")));
-                table.addCell(String.valueOf(rs.getInt("qty")));
-                table.addCell(rs.getDate("import_date").toString());
+                table.addCell(GREEN + String.valueOf(rs.getInt("id")) + RESET, dataStyle);
+                table.addCell(rs.getString("product_name"), dataStyle);
+                table.addCell(String.format("%.2f", rs.getDouble("unit_price")), dataStyle);
+                table.addCell(String.valueOf(rs.getInt("qty")), dataStyle);
+                table.addCell(rs.getDate("import_date").toString(), dataStyle);
             }
+
+            table.addCell("Page : " + YELLOW + "2" + RESET + " of " + RED + "4" + RESET, dataStyle, 2);
+            table.addCell("Total Record : " + GREEN + "10" + RESET, dataStyle, 3);
 
             System.out.println(table.render());
 
@@ -103,15 +111,16 @@ public class View {
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
-                // Create a table for a single record
-                Table table = new Table(5, BorderStyle.UNICODE_BOX);
-                CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+                CellStyle headerStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+                CellStyle dataStyle = new CellStyle(CellStyle.HorizontalAlign.center);
 
-                table.addCell(BLUE + "ID" + RESET, center);
-                table.addCell(BLUE +"Name" + RESET, center);
-                table.addCell(BLUE +"Unit Price" + RESET, center);
-                table.addCell(BLUE +"Qty" + RESET, center);
-                table.addCell(BLUE +"Import Date" + RESET, center);
+                Table table = new Table(5, BorderStyle.UNICODE_BOX_WIDE);;
+
+                table.addCell(BLUE + "ID" + RESET, headerStyle);
+                table.addCell(BLUE +"Name" + RESET, headerStyle);
+                table.addCell(BLUE +"Unit Price" + RESET, headerStyle);
+                table.addCell(BLUE +"Qty" + RESET, headerStyle);
+                table.addCell(BLUE +"Import Date" + RESET, headerStyle);
 
                 table.addCell(String.valueOf(rs.getInt("id")));
                 table.addCell(rs.getString("product_name"));
