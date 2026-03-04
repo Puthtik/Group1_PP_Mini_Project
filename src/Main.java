@@ -24,6 +24,7 @@ public class Main {
             view.start();
 
 
+
         }catch (SQLException e){
             System.out.println("Connection Failed");
             e.printStackTrace();

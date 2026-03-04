@@ -1,4 +1,5 @@
 package view;
+import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.Table;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import java.sql.*;
@@ -27,6 +28,7 @@ public class View {
             ResultSet rs = stmt.executeQuery(sql);
 
             Table table = new Table(5, BorderStyle.UNICODE_BOX);
+            CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
 
             table.setColumnWidth(0, 10, 15);
             table.setColumnWidth(1, 30, 40);
@@ -34,11 +36,11 @@ public class View {
             table.setColumnWidth(3, 10, 15);
             table.setColumnWidth(4, 15, 20);
 
-            table.addCell("ID");
-            table.addCell("Name");
-            table.addCell("Unit Price");
-            table.addCell("Qty");
-            table.addCell("Import Date");
+            table.addCell("ID",center);
+            table.addCell("Name", center);
+            table.addCell("Unit Price", center);
+            table.addCell("Qty", center);
+            table.addCell("Import Date", center);
 
             while (rs.next()) {
                 table.addCell(String.valueOf(rs.getInt("id")));
