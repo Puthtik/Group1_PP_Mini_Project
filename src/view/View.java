@@ -5,8 +5,11 @@ import org.nocrala.tools.texttablefmt.Table;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import static java.awt.Color.GREEN;
 
 
 public class View {
@@ -17,10 +20,9 @@ public class View {
     public static final String RED = "\u001B[31m";
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_BLUE = "\u001B[34m";
+    List<Products> products = new ArrayList<>();
+    List<Products> Updateproducts = new ArrayList<>();
 
     Scanner scanner = new Scanner(System.in);
 
@@ -99,6 +101,99 @@ public class View {
         System.out.println("\t".repeat(8) + "------------------------------------");
 
     }
+    //Unsave Case
+    public void showUnsaveItem() {
+
+        if (products.isEmpty()) {
+            System.out.println("\nNo unsaved products found.\n");
+            return;
+        }
+
+        Table table = new Table(3, BorderStyle.UNICODE_BOX_WIDE);
+
+        table.setColumnWidth(0, 25, 35);
+        table.setColumnWidth(1, 15, 20);
+        table.setColumnWidth(2, 10, 15);
+
+        table.addCell(" Product Name ", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell(" Unit Price ($) ", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell(" Qty ", new CellStyle(CellStyle.HorizontalAlign.center));
+
+        for (Products p : products) {
+            table.addCell(
+                    p.getProduct_name(),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+            table.addCell(
+                    String.format("$%.2f", p.getUnit_price()),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+            table.addCell(
+                    String.valueOf(p.getQty()),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+        }
+
+        System.out.println(table.render());
+    }
+    public void showUnsaveUpdate(){
+        if (Updateproducts.isEmpty()) {
+            System.out.println("\nNo unsaved products found.\n");
+            return;
+        }
+
+        Table table = new Table(3, BorderStyle.UNICODE_BOX_WIDE);
+
+        table.setColumnWidth(0, 25, 35);
+        table.setColumnWidth(1, 15, 20);
+        table.setColumnWidth(2, 10, 15);
+
+        table.addCell(" Product Name ", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell(" Unit Price ($) ", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell(" Qty ", new CellStyle(CellStyle.HorizontalAlign.center));
+
+        for (Products p : Updateproducts) {
+            table.addCell(
+                    p.getProduct_name(),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+            table.addCell(
+                    String.format("$%.2f", p.getUnit_price()),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+            table.addCell(
+                    String.valueOf(p.getQty()),
+                    new CellStyle(CellStyle.HorizontalAlign.center)
+            );
+        }
+
+        System.out.println(table.render());
+    }
+    public void unSaveCase(){
+        System.out.println("UI. Iserted Items \t UU. Updated Product \t B. Back");
+        String command;
+
+        do {
+            command = inputOption();
+
+            switch (command) {
+
+                case "UI":
+                    showUnsaveItem();
+                    break;
+
+                case "UU":
+                    System.out.println("Previous Page");
+                    break;
+
+                case "B":
+                    System.out.println("make it back the the main menu");
+                    break;
+            }
+
+        } while (!command.equals("B"));
+
+    }
 
 
 
@@ -120,10 +215,9 @@ public class View {
     }
 
 
+
     public void start() {
-
         String command;
-
         do {
             showTable();
             showMenu();
@@ -135,92 +229,81 @@ public class View {
                     if (currentPage < totalPages) {
                         currentPage++;
                     } else {
-                        System.out.println("Already last page");
+                        System.out.println(RED + "Already last page." + RESET);
                     }
                     break;
-
                 case "P":
                     if (currentPage > 1) {
                         currentPage--;
                     } else {
-                        System.out.println("Already first page");
+                        System.out.println(RED + "Already first page." + RESET);
                     }
                     break;
-
                 case "F":
                     currentPage = 1;
                     break;
-
                 case "L":
                     currentPage = totalPages;
                     break;
-
                 case "G":
-                    System.out.print("Enter page number: ");
-                    int page = scanner.nextInt();
-                    scanner.nextLine();
+                    try {
+                        System.out.print("Enter page number: ");
+                        int page = Integer.parseInt(scanner.nextLine());
 
-                    if (page >= 1 && page <= totalPages) {
-                        currentPage = page;
-                    } else {
-                        System.out.println("Invalid page number");
+                        if (page >= 1 && page <= totalPages) {
+                            currentPage = page;
+                        } else {
+                            System.out.println(RED + "Invalid page number." + RESET);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println(RED + "Page must be a number." + RESET);
                     }
-
                     break;
-
                 case "W":
-                    System.out.println("Write");
+                    insertProduct(products, scanner);
                     break;
-
                 case "R":
                     readById();
                     break;
                 case "U":
                     updateMenu();
                     break;
-
                 case "D":
-                    System.out.println("Delete");
+                    System.out.println(YELLOW + "Delete feature coming soon." + RESET);
                     break;
-
                 case "S":
                     SearchName search = new SearchName(connection);
                     search.searchName();
                     break;
-
                 case "SR":
-
-                    System.out.print("Enter number of rows per page: ");
-                    rowsPerPage = scanner.nextInt();
-                    scanner.nextLine();
-
-                    currentPage = 1;
-
+                    try {
+                        System.out.print("Enter number of rows per page: ");
+                        rowsPerPage = Integer.parseInt(scanner.nextLine());
+                        currentPage = 1;
+                    } catch (NumberFormatException e) {
+                        System.out.println(RED + "Rows must be a number." + RESET);
+                    }
                     break;
-
                 case "SA":
-                    System.out.println("Save");
+                    System.out.println(YELLOW + "Save feature coming soon." + RESET);
                     break;
-
                 case "UN":
-                    System.out.println("Unsaved");
+                    unSaveCase();
                     break;
-
                 case "BA":
-                    System.out.println("Backup");
+                    System.out.println(YELLOW + "Backup feature coming soon." + RESET);
                     break;
-
                 case "RE":
-                    System.out.println("Restore");
+                    System.out.println(YELLOW + "Restore feature coming soon." + RESET);
                     break;
-
                 case "E":
-                    System.out.println("Exiting program..., Goodbye!");
+                    System.out.println("Exiting program... Goodbye!" + RESET);
                     break;
 
                 default:
-                    System.out.println("Feature not implemented yet.");
+                    System.out.println(RED + "Invalid option." + RESET);
             }
+
         } while (!command.equals("E"));
     }
 
@@ -263,7 +346,7 @@ public class View {
             int qty = rs.getInt("qty");
             Date importDate = rs.getDate("import_date");
 
-            String choice;   // declare outside
+            String choice;
 
             do {
 
@@ -334,9 +417,30 @@ public class View {
         }
     }
 
+    //insert product into List
+    public static void insertProduct(List<Products> products, Scanner sc) {
+//        System.out.print("Enter Product ID: ");
+//        int id = sc.nextInt();
+//        sc.nextLine();
+
+        System.out.print("Enter Product Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Unit Price: ");
+        double price = sc.nextDouble();
+
+        System.out.print("Enter Quantity: ");
+        int qty = sc.nextInt();
+
+        Products product = new Products(name, price, qty);
+        products.add(product);
+
+        System.out.println("Product inserted successfully");
+    }
+
     public void readById(){
 
-        System.out.print("Please Input id to get record : ");
+        System.out.print("Please Input id to get product : ");
         String input = scanner.nextLine();
         int productId = 0;
         try{
