@@ -4,6 +4,9 @@ import java.sql.*;
 
 
 public class Main {
+
+
+
     public static void main(String[] args){
 
         String url = System.getenv("DB_URL");

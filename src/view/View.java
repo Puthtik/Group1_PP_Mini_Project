@@ -9,6 +9,12 @@ import java.util.Scanner;
 
 public class View {
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+
     Scanner scanner = new Scanner(System.in);
 
     private int currentPage = 1;
@@ -29,6 +35,8 @@ public class View {
     private void showTable() {
         calculateTotalPages();
 
+
+
         int offset = (currentPage - 1) * rowsPerPage;
 
         String sql = """
@@ -47,21 +55,32 @@ public class View {
 
             Table table = new Table(5, BorderStyle.UNICODE_BOX);
             CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+            CellStyle left = new CellStyle(CellStyle.HorizontalAlign.left);
 
-            table.addCell("ID", center);
-            table.addCell("Name", center);
-            table.addCell("Unit Price", center);
-            table.addCell("Qty", center);
-            table.addCell("Import Date", center);
+            table.setColumnWidth(0, 12, 18);
+            table.setColumnWidth(1, 35, 45);
+            table.setColumnWidth(2, 20, 25);
+            table.setColumnWidth(3, 12, 15);
+            table.setColumnWidth(4, 20, 25);
+
+            table.addCell(  View.ANSI_BLUE+ "ID" + View.ANSI_RESET, center);
+            table.addCell(  View.ANSI_BLUE+ "Name" + View.ANSI_RESET, center);
+            table.addCell(  View.ANSI_BLUE+ "Unit Price" + View.ANSI_RESET, center);
+            table.addCell(  View.ANSI_BLUE+ "Import Date" + View.ANSI_RESET, center);
 
             while (rs.next()) {
-
-                table.addCell(String.valueOf(rs.getInt("id")));
-                table.addCell(rs.getString("product_name"));
-                table.addCell(String.valueOf(rs.getDouble("unit_price")));
-                table.addCell(String.valueOf(rs.getInt("qty")));
-                table.addCell(rs.getDate("import_date").toString());
+                table.addCell(String.valueOf(rs.getInt("id")), center);
+                table.addCell(rs.getString("product_name"), left);
+                table.addCell(String.format("%.2f", rs.getDouble("unit_price")), center);
+                table.addCell(String.valueOf(rs.getInt("qty")), center);
+                table.addCell(rs.getDate("import_date").toString(), center);
             }
+
+            table.addCell("Page : " + currentPage + " of " + totalPages, center);
+            table.addCell("");
+            table.addCell("");
+            table.addCell("Total Record : " + totalRecords, center);
+            table.addCell("");
 
             System.out.println(table.render());
             System.out.println("Page " + currentPage + " of " + totalPages);
