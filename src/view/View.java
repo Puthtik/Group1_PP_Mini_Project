@@ -64,6 +64,7 @@ public class View {
             table.addCell(  View.ANSI_BLUE+ "ID" + View.ANSI_RESET, center);
             table.addCell(  View.ANSI_BLUE+ "Name" + View.ANSI_RESET, center);
             table.addCell(  View.ANSI_BLUE+ "Unit Price" + View.ANSI_RESET, center);
+            table.addCell(View.ANSI_BLUE+ "Quantity" + View.ANSI_RESET, center);
             table.addCell(  View.ANSI_BLUE+ "Import Date" + View.ANSI_RESET, center);
 
             while (rs.next()) {
@@ -74,14 +75,9 @@ public class View {
                 table.addCell(rs.getDate("import_date").toString(), center);
             }
 
-            table.addCell("Page : " + currentPage + " of " + totalPages, center);
-            table.addCell("");
-            table.addCell("");
-            table.addCell("Total Record : " + totalRecords, center);
-            table.addCell("");
-
             System.out.println(table.render());
             System.out.println("Page " + currentPage + " of " + totalPages);
+            System.out.println("Total Records: " + totalRecords);
 
         } catch (SQLException e) {
             e.printStackTrace();
