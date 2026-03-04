@@ -1,30 +1,19 @@
+import view.Products;
 import view.View;
-
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import static view.Products.insertProduct;
 
 
 public class Main {
     public static void main(String[] args){
 
-        String url = System.getenv("DB_URL");
-        String username = System.getenv("DB_USERNAME");
-        String password = System.getenv("DB_PASSWORD");
-
-        try {
-            Class.forName("org.postgresql.Driver");
-            System.out.println("File found!");
-        } catch (ClassNotFoundException e){
-            System.out.println("Class not found!");
-        }
-
-        try (Connection connection = DriverManager.getConnection(url,username,password)) {
-
-            System.out.println("Connected");
+        try (Connection connection = View.getConnection()) {
             View view = new View(connection);
             view.start();
-
-
-
         }catch (SQLException e){
             System.out.println("Connection Failed");
             e.printStackTrace();
