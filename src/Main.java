@@ -15,14 +15,17 @@ public class Main {
 
         try {
             Class.forName("org.postgresql.Driver");
-            System.out.println("File found!");
+//            System.out.println("File found!");
         } catch (ClassNotFoundException e){
             System.out.println("Class not found!");
         }
 
         try (Connection connection = DriverManager.getConnection(url,username,password)) {
 
-            System.out.println("Connected");
+//            System.out.println("Connected");
+            System.out.println("=".repeat(105));
+            System.out.println(" ".repeat(38) + "Welcome to Stock Management System");
+            System.out.println("=".repeat(105));
             View view = new View(connection);
             view.start();
 
