@@ -12,9 +12,7 @@ public class View {
 
     public View(Connection connection) {
         this.connection = connection;
-        showTable();
-        showMenu();
-        inputOption();
+
 
     }
 
