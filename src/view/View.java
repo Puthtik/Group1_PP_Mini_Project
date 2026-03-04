@@ -7,7 +7,14 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import java.sql.*;
 import java.util.Scanner;
 
+
+
 public class View {
+
+    public static final String RESET = "\u001B[0m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String RED = "\u001B[31m";
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
@@ -27,13 +34,10 @@ public class View {
     public View(Connection connection) {
         this.connection = connection;
 
-
     }
 
     private void showTable() {
         calculateTotalPages();
-
-
 
         int offset = (currentPage - 1) * rowsPerPage;
 
@@ -127,8 +131,6 @@ public class View {
 
             switch (command) {
 
-
-
                 case "N":
                     if (currentPage < totalPages) {
                         currentPage++;
@@ -171,9 +173,8 @@ public class View {
                     break;
 
                 case "R":
-                    System.out.println("Read");
+                    readById();
                     break;
-
                 case "U":
                     updateMenu();
                     break;
@@ -332,4 +333,56 @@ public class View {
             System.out.println("Invalid Input!");
         }
     }
+
+    public void readById(){
+
+        System.out.print("Please Input id to get record : ");
+        String input = scanner.nextLine();
+        int productId = 0;
+        try{
+            productId = Integer.parseInt(input);
+        }catch (NumberFormatException e){
+            System.out.println( RED + "ID must be number !" + RESET);
+            return;
+        }
+        String sql = "SELECT * FROM tbproducts WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, productId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                // Create a table for a single record
+                Table table = new Table(5, BorderStyle.UNICODE_BOX);
+                CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+
+                table.addCell(BLUE + "ID" + RESET, center);
+                table.addCell(BLUE +"Name" + RESET, center);
+                table.addCell(BLUE +"Unit Price" + RESET, center);
+                table.addCell(BLUE +"Qty" + RESET, center);
+                table.addCell(BLUE +"Import Date" + RESET, center);
+
+                table.addCell(String.valueOf(rs.getInt("id")));
+                table.addCell(rs.getString("product_name"));
+                table.addCell(String.valueOf(rs.getDouble("unit_price")));
+                table.addCell(String.valueOf(rs.getInt("qty")));
+                table.addCell(rs.getDate("import_date").toString());
+
+                System.out.println(table.render());
+
+                // Pause so the user can actually see the record before the menu refreshes
+                System.out.print(YELLOW + "Press Enter to continue..." + RESET);
+                scanner.nextLine();
+
+            } else {
+                System.out.println(RED+"No record was found with id : "+ RESET + productId);
+                System.out.print(YELLOW + "Press enter to continue..." + RESET);
+                scanner.nextLine();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error reading product: " + e.getMessage());
+        }
+    }
+
 }
