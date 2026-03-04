@@ -129,6 +129,8 @@ public class View {
 
             switch (command) {
 
+
+
                 case "N":
                     if (currentPage < totalPages) {
                         currentPage++;
@@ -183,7 +185,8 @@ public class View {
                     break;
 
                 case "S":
-                    System.out.println("Search");
+                    SearchName search = new SearchName(connection);
+                    search.searchName();
                     break;
 
                 case "SR":
@@ -215,6 +218,9 @@ public class View {
                 case "E":
                     System.out.println("Exiting program..., Goodbye!");
                     break;
+
+                default:
+                    System.out.println("Feature not implemented yet.");
             }
         } while (!command.equals("E"));
     }
