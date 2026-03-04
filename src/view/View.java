@@ -1,13 +1,20 @@
 package view;
+
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.Table;
 import org.nocrala.tools.texttablefmt.BorderStyle;
+
 import java.sql.*;
 import java.util.Scanner;
 
 public class View {
 
     Scanner scanner = new Scanner(System.in);
+
+    private int currentPage = 1;
+    private int rowsPerPage = 10;
+    private int totalRecords;
+    private int totalPages;
 
     private Connection connection;
 
@@ -20,60 +27,69 @@ public class View {
     }
 
     private void showTable() {
+        calculateTotalPages();
 
-        String sql = "SELECT * FROM tbproducts ORDER BY id LIMIT 10";
+        int offset = (currentPage - 1) * rowsPerPage;
+
+        String sql = """
+                SELECT * FROM tbproducts
+                ORDER BY id
+                LIMIT ? OFFSET ?
+                """;
 
         try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, rowsPerPage);
+            stmt.setInt(2, offset);
+
+            ResultSet rs = stmt.executeQuery();
 
             Table table = new Table(5, BorderStyle.UNICODE_BOX);
             CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
 
-            table.setColumnWidth(0, 10, 15);
-            table.setColumnWidth(1, 30, 40);
-            table.setColumnWidth(2, 20, 25);
-            table.setColumnWidth(3, 10, 15);
-            table.setColumnWidth(4, 15, 20);
-
-            table.addCell("ID",center);
+            table.addCell("ID", center);
             table.addCell("Name", center);
             table.addCell("Unit Price", center);
             table.addCell("Qty", center);
             table.addCell("Import Date", center);
 
             while (rs.next()) {
+
                 table.addCell(String.valueOf(rs.getInt("id")));
                 table.addCell(rs.getString("product_name"));
-                table.addCell(String.format("%.2f", rs.getDouble("unit_price")));
+                table.addCell(String.valueOf(rs.getDouble("unit_price")));
                 table.addCell(String.valueOf(rs.getInt("qty")));
                 table.addCell(rs.getDate("import_date").toString());
             }
 
-            System.out.println("\nConnected Successfully\n");
             System.out.println(table.render());
+            System.out.println("Page " + currentPage + " of " + totalPages);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void showMenu(){
-        System.out.println("\t".repeat(8)+"--------------- Menu ---------------");
+    private void showMenu() {
+        System.out.println("\t".repeat(8) + "--------------- Menu ---------------");
         System.out.println("\t N  - Next Page \t P  - Previous Page \t F  - First Page \t L  - Last Page \t G  - Go To Page \n");
 
         System.out.println(" W  - Write \t R  - Read (id) \t U  - Update \t D  - Delete \t S  - Search (name) \t SR - Set Rows");
 
         System.out.println(" SA - Save \t\t UN - Unsaved \t\t BA - Backup \t RE - Restore \t E  - Exit ");
 
-        System.out.println("\t".repeat(8)+"------------------------------------");
+        System.out.println("\t".repeat(8) + "------------------------------------");
 
     }
+
     public String inputOption() {
+
         String input;
+
         do {
             System.out.print("\n -> Choose option: ");
-            input = scanner.nextLine().trim();
+            input = scanner.nextLine().trim().toUpperCase();
 
             if (!Validate.isValidMenu(input)) {
                 System.out.println("Invalid option! Please try again");
@@ -81,7 +97,7 @@ public class View {
 
         } while (!Validate.isValidMenu(input));
 
-        return input.toUpperCase();
+        return input;
     }
 
 
@@ -97,23 +113,40 @@ public class View {
             switch (command) {
 
                 case "N":
-                    System.out.println("Next Page");
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                    } else {
+                        System.out.println("Already last page");
+                    }
                     break;
 
                 case "P":
-                    System.out.println("Previous Page");
+                    if (currentPage > 1) {
+                        currentPage--;
+                    } else {
+                        System.out.println("Already first page");
+                    }
                     break;
 
                 case "F":
-                    System.out.println("First Page");
+                    currentPage = 1;
                     break;
 
                 case "L":
-                    System.out.println("Last Page");
+                    currentPage = totalPages;
                     break;
 
                 case "G":
-                    System.out.println("Go To Page");
+                    System.out.print("Enter page number: ");
+                    int page = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (page >= 1 && page <= totalPages) {
+                        currentPage = page;
+                    } else {
+                        System.out.println("Invalid page number");
+                    }
+
                     break;
 
                 case "W":
@@ -137,7 +170,13 @@ public class View {
                     break;
 
                 case "SR":
-                    System.out.println("Set Rows");
+
+                    System.out.print("Enter number of rows per page: ");
+                    rowsPerPage = scanner.nextInt();
+                    scanner.nextLine();
+
+                    currentPage = 1;
+
                     break;
 
                 case "SA":
@@ -157,10 +196,27 @@ public class View {
                     break;
 
                 case "E":
-                    System.out.println("Exit program");
+                    System.out.println("Exiting program..., Goodbye!");
                     break;
             }
-
         } while (!command.equals("E"));
+    }
+
+    // Pagination method
+    private void calculateTotalPages() {
+        String sql = "SELECT COUNT(*) FROM tbproducts";
+        try {
+
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if (rs.next()) {
+                totalRecords = rs.getInt(1);
+                totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
