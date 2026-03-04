@@ -6,21 +6,17 @@ import java.util.Scanner;
 
 public class View {
 
-    Scanner scanner = new Scanner(System.in);
-
+    private Scanner scanner = new Scanner(System.in);
     private Connection connection;
 
     public View(Connection connection) {
         this.connection = connection;
-        showTable();
-        showMenu();
-        inputOption();
-
     }
 
     private void showTable() {
 
-        String sql = "SELECT * FROM tbproducts ORDER BY id LIMIT 10";
+        String sql = "SELECT * FROM tbproducts ORDER BY id LIMIT 10 ";
+
 
         try {
             Statement stmt = connection.createStatement();
@@ -48,7 +44,6 @@ public class View {
                 table.addCell(rs.getDate("import_date").toString());
             }
 
-            System.out.println("\nConnected Successfully\n");
             System.out.println(table.render());
 
         } catch (SQLException e) {
@@ -67,6 +62,7 @@ public class View {
         System.out.println("\t".repeat(8)+"------------------------------------");
 
     }
+
     public String inputOption() {
         String input;
         do {
@@ -82,7 +78,6 @@ public class View {
         return input.toUpperCase();
     }
 
-
     public void start() {
 
         String command;
@@ -93,6 +88,8 @@ public class View {
             command = inputOption();
 
             switch (command) {
+
+
 
                 case "N":
                     System.out.println("Next Page");
@@ -131,7 +128,8 @@ public class View {
                     break;
 
                 case "S":
-                    System.out.println("Search");
+                    SearchName search = new SearchName(connection);
+                    search.searchName();
                     break;
 
                 case "SR":
@@ -157,6 +155,9 @@ public class View {
                 case "E":
                     System.out.println("Exit program");
                     break;
+
+                default:
+                    System.out.println("Feature not implemented yet.");
             }
 
         } while (!command.equals("E"));

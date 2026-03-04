@@ -1,3 +1,4 @@
+import view.SearchName;
 import view.View;
 
 import java.sql.*;
