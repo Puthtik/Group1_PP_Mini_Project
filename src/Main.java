@@ -5,7 +5,6 @@ import java.sql.*;
 
 public class Main {
     public static void main(String[] args){
-
         String url = System.getenv("DB_URL");
         String username = System.getenv("DB_USERNAME");
         String password = System.getenv("DB_PASSWORD");

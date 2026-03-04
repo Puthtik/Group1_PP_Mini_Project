@@ -67,6 +67,8 @@ public class View {
         System.out.println("\t".repeat(8)+"------------------------------------");
 
     }
+
+
     public String inputOption() {
         String input;
         do {
@@ -123,7 +125,7 @@ public class View {
                     break;
 
                 case "U":
-                    System.out.println("Update");
+                    updateMenu();
                     break;
 
                 case "D":
@@ -160,5 +162,97 @@ public class View {
             }
 
         } while (!command.equals("E"));
+    }
+
+    private void updateMenu() {
+
+        try {
+            System.out.print("Input ID to update: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            String sql = "SELECT * FROM tbproducts WHERE id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("ID not found!");
+                return;
+            }
+
+            String name = rs.getString("product_name");
+            double price = rs.getDouble("unit_price");
+            int qty = rs.getInt("qty");
+            Date importDate = rs.getDate("import_date");
+
+            String choice;   // declare outside
+
+            do {
+
+                Table table = new Table(5, BorderStyle.UNICODE_BOX);
+
+                table.setColumnWidth(0, 10, 15);
+                table.setColumnWidth(1, 30, 40);
+                table.setColumnWidth(2, 20, 25);
+                table.setColumnWidth(3, 10, 15);
+                table.setColumnWidth(4, 15, 20);
+
+                table.addCell("ID");
+                table.addCell("Name");
+                table.addCell("Unit Price");
+                table.addCell("Qty");
+                table.addCell("Import Date");
+
+                table.addCell(String.valueOf(id));
+                table.addCell(name);
+                table.addCell(String.valueOf(price));
+                table.addCell(String.valueOf(qty));
+                table.addCell(importDate.toString());
+
+                System.out.println(table.render());
+
+                System.out.println("1. Name  2. Unit Price  3. Qty  4. All Field  5. Exit");
+                System.out.print("Choose option to update: ");
+                choice = scanner.nextLine();
+
+                switch (choice) {
+
+                    case "1":
+                        System.out.print("Enter new name: ");
+                        name = scanner.nextLine();
+                        break;
+
+                    case "2":
+                        System.out.print("Enter new price: ");
+                        price = Double.parseDouble(scanner.nextLine());
+                        break;
+
+                    case "3":
+                        System.out.print("Enter new qty: ");
+                        qty = Integer.parseInt(scanner.nextLine());
+                        break;
+
+                    case "4":
+                        System.out.print("Enter new name: ");
+                        name = scanner.nextLine();
+                        System.out.print("Enter new price: ");
+                        price = Double.parseDouble(scanner.nextLine());
+                        System.out.print("Enter new qty: ");
+                        qty = Integer.parseInt(scanner.nextLine());
+                        break;
+
+                    case "5":
+                        System.out.println("Exit updating...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice!");
+                }
+
+            } while (!"5".equals(choice));
+
+        } catch (Exception e) {
+            System.out.println("Invalid Input!");
+        }
     }
 }
